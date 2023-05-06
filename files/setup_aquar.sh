@@ -112,7 +112,7 @@ services:
       - "mariadb"
     restart: unless-stopped
   jellyfin:
-    image: ghcr.io/linuxserver/jellyfin
+    image: nyanmisaka/jellyfin:latest
     container_name: jellyfin
     environment:
       - PUID=1000
@@ -121,8 +121,8 @@ services:
       # - UMASK_SET=<022> #optional
     volumes:
       - /opt/aquar/storages/apps/jellyfin/config:/config
-      - /opt/aquar/storages/apps/jellyfin/data/tvshows:/data/tvshows
-      - /opt/aquar/storages/aquarpool/movies:/data/movies
+      - /opt/aquar/storages/aquarpool/media/tvshows:/data/tvshows
+      - /opt/aquar/storages/aquarpool/media/movies:/data/movies
       # - /opt/vc/lib:/opt/vc/lib #optional
     ports:
       - 8096:8096
