@@ -8,14 +8,14 @@ echo '********开始初始化aquar环境********'
 apt update
 echo '********安装&挂载NFS********'
 apt install nfs-common -y
-mkdir -p /opt/aquar/storages/aquarpool/
+mkdir -p /mnt/naspool/
 echo 'mount nfs'
-mount -t nfs $nfspath:/mnt/aquarpool /opt/aquar/storages/aquarpool/
+mount -t nfs $nfspath:/mnt/naspool /mnt/naspool/
 if ! grep -q '##\[aquar config start\]##' /etc/fstab;
 then
     cat >> /etc/fstab <<EOF
 ##[aquar config start]##
-$nfspath:/mnt/aquarpool /opt/aquar/storages/aquarpool nfs defaults,_netdev 0 0
+$nfspath:/mnt/naspool /mnt/naspool nfs defaults,_netdev 0 0
 ##[aquar config end]##
 EOF
 else
@@ -105,7 +105,7 @@ services:
       - /opt/aquar/storages/apps/nextcloud/apps:/var/www/html/custom_apps
       - /opt/aquar/storages/apps/nextcloud/config:/var/www/html/config
       - /opt/aquar/storages/apps/nextcloud/data:/var/www/html/data
-      - /opt/aquar/storages/aquarpool:/opt/aquarpool
+      - /mnt/naspool:/opt/aquarpool
     ports:
       - "8081:80"
     depends_on:
@@ -121,8 +121,8 @@ services:
       # - UMASK_SET=<022> #optional
     volumes:
       - /opt/aquar/storages/apps/jellyfin/config:/config
-      - /opt/aquar/storages/aquarpool/media/tvshows:/data/tvshows
-      - /opt/aquar/storages/aquarpool/media/movies:/data/movies
+      - /mnt/naspool/media/tvshows:/data/tvshows
+      - /mnt/naspool/media/movies:/data/movies
       # - /opt/vc/lib:/opt/vc/lib #optional
     ports:
       - 8096:8096
@@ -140,7 +140,7 @@ services:
       - TZ="Asia/Shanghai"
     volumes:
       - /opt/aquar/storages/apps/syncthing/config:/config
-      - /opt/aquar/storages/aquarpool:/opt/aquarpool
+      - /mnt/naspool:/opt/aquarpool
       # - /path/to/data1:/data1
     ports:
       - 8384:8384
@@ -182,7 +182,7 @@ services:
       PHOTOPRISM_SITE_DESCRIPTION: ""
       PHOTOPRISM_SITE_AUTHOR: ""
     volumes:
-      - "/opt/aquar/storages/aquarpool/images:/photoprism/originals"
+      - "/mnt/naspool/images:/photoprism/originals"
       # Multiple folders can be indexed by mounting them as sub-folders of /photoprism/originals:
       # - "/mnt/Family:/photoprism/originals/Family"    # [folder_1]:/photoprism/originals/[folder_1]
       # - "/mnt/Friends:/photoprism/originals/Friends"  # [folder_2]:/photoprism/originals/[folder_2]
@@ -220,7 +220,7 @@ services:
       - PASS=admin
     volumes:
       - /opt/aquar/storages/apps/transmission/config:/config
-      - /opt/aquar/storages/aquarpool/btdownload:/downloads
+      - /mnt/naspool/btdownload:/downloads
       - /opt/aquar/storages/apps/transmission/watch:/watch
     ports:
       - 9091:9091
@@ -246,7 +246,7 @@ services:
       - "8008:80"
     volumes:
       - /opt/aquar/storages/apps/filerun/html:/var/www/html
-      - /opt/aquar/storages/aquarpool:/user-files
+      - /mnt/naspool:/user-files
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
@@ -262,7 +262,7 @@ services:
       ND_BASEURL: ""
     volumes:
       - "/opt/aquar/storages/apps/navidrome/data:/data"
-      - "/opt/aquar/storages/aquarpool/music:/music:ro"
+      - "/mnt/naspool/music:/music:ro"
   aquarhome:
     image: finetu/aquarhome:latest
     container_name: aquarhome 
@@ -272,7 +272,7 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - /opt/aquar/storages/apps/aquarhome/data:/var/aquardata
-      - /opt/aquar/storages/aquarpool:/opt/aquarpool
+      - /mnt/naspool:/opt/aquarpool
       - /opt/aquar/storages/apps/aquarhome/logs:/root/.pm2/logs
     ports:
       - 8172:8172
@@ -287,7 +287,7 @@ services:
       - WEBUI_PORT=8082
     volumes:
       - /opt/aquar/storages/apps/qbittorrent/config:/config
-      - /opt/aquar/storages/aquarpool/qbdownloads:/downloads
+      - /mnt/naspool/qbdownloads:/downloads
       # - /opt/vc/lib:/opt/vc/lib #optional
     ports:
       - 8082:8082
